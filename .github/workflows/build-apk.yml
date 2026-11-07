@@ -15,15 +15,18 @@ jobs:
       - name: Get Project
         uses: actions/checkout@v4
 
+      - name: Create package file
+        run: npm init -y
+
       - name: Build Android APK
         uses: cemcoe/web-to-apk-action@v1
         with:
-          app_name: "Marwari Rajsthani Bhojanalaya"
+          app_name: "Marwari Hotel"
           app_id: "in.mukesh.marwarihotel"
           build_command: "mkdir -p www && cp index.html www/index.html"
           web_dir: "www"
 
-      - name: Save APK Artifact
+      - name: Save APK
         uses: actions/upload-artifact@v4
         with:
           name: Marwari-Hotel-APK
