@@ -12,24 +12,57 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get Project
+      - name: Checkout Project
         uses: actions/checkout@v4
 
-      - name: Create package file
-        run: npm init -y
-
-      - name: Build Android APK
-        uses: cemcoe/web-to-apk-action@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          app_name: "Marwari Hotel"
-          app_id: "in.mukesh.marwarihotel"
-          build_command: "mkdir -p www && cp index.html www/index.html"
-          web_dir: "www"
+          node-version: 22
 
-      - name: Save APK
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Prepare Website
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/android@7 @capacitor/cli@7
+
+      - name: Configure Capacitor
+        run: |
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "in.mukesh.marwarihotel",
+            "appName": "Marwari Hotel",
+            "webDir": "www"
+          }
+          EOF
+
+      - name: Create Android Project
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Marwari-Hotel-APK
-          path: app-release.apk
-          if-no-files-found: error
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
