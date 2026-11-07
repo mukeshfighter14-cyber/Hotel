@@ -1,0 +1,32 @@
+
+name: Build Marwari Hotel APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get Project
+        uses: actions/checkout@v4
+
+      - name: Build Android APK
+        uses: cemcoe/web-to-apk-action@v1
+        with:
+          app_name: "Marwari Rajsthani Bhojanalaya"
+          app_id: "in.mukesh.marwarihotel"
+          build_command: "mkdir -p www && cp index.html www/index.html"
+          web_dir: "www"
+
+      - name: Save APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Marwari-Hotel-APK
+          path: app-release.apk
+          if-no-files-found: error
+          retention-days: 7
