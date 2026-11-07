@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#8b260d">
+<title>मारवाड़ी राजस्थानी भोजनालय</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8ed;color:#352016}
+header{background:#8b260d;color:white;text-align:center;padding:24px 12px}
+header h1{margin:8px 0;font-size:27px}
+header p{margin:5px}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;background:#61200e;padding:12px}
+button{border:0;border-radius:8px;padding:11px 15px;background:#a43b16;color:white;font-weight:bold;cursor:pointer}
+nav button{background:#fff;color:#70250e}
+section{padding:16px;max-width:750px;margin:auto}
+h2{color:#8b260d}
+.card{background:white;border-radius:13px;padding:15px;margin:12px 0;box-shadow:0 2px 9px #0001}
+.item{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:12px 0}
+.price{font-weight:bold;color:#8b260d}
+input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin:6px 0 13px;font-size:15px}
+label{font-weight:bold}
+.admin{display:none}
+.green{background:#168346}
+footer{text-align:center;background:#61200e;color:white;padding:20px;margin-top:25px}
+.small{font-size:13px;color:#777}
+</style>
+</head>
+<body>
+
+<header>
+<div style="font-size:45px">🍛</div>
+<h1 id="hotelName">मारवाड़ी राजस्थानी भोजनालय</h1>
+<p id="tagline">शुद्ध राजस्थानी एवं मारवाड़ी स्वाद</p>
+<p>📍 कटनी, मध्य प्रदेश</p>
+</header>
+
+<nav>
+<button onclick="show('home')">होम</button>
+<button onclick="show('menu')">मेन्यू</button>
+<button onclick="show('info')">होटल जानकारी</button>
+<button onclick="show('admin')">Admin</button>
+</nav>
+
+<section id="home">
+<div class="card" style="text-align:center">
+<h2>🙏 राम राम सा 🙏</h2>
+<h3>आपका स्वागत है!</h3>
+<p>घर जैसा स्वाद, राजस्थानी अंदाज।</p>
+<p id="homeHours"></p>
+<button onclick="show('menu')">मेन्यू देखें</button>
+</div>
+
+<div class="card">
+<h2>⭐ हमारी खासियत</h2>
+<p>🥘 दाल बाटी चूरमा</p>
+<p>🍛 राजस्थानी थाली</p>
+<p>🫓 बाजरे की रोटी</p>
+<p>🥣 गट्टे की सब्जी</p>
+</div>
+
+<div class="card">
+<h2>📞 ऑर्डर करें</h2>
+<p>घर बैठे स्वादिष्ट भोजन मँगवाएँ।</p>
+<button class="green" onclick="order()">WhatsApp पर ऑर्डर करें</button>
+</div>
+</section>
+
+<section id="menu" style="display:none">
+<h2>🍽️ हमारा मेन्यू</h2>
+<div id="menuList"></div>
+<button class="green" onclick="order()">WhatsApp से ऑर्डर करें</button>
+</section>
+
+<section id="info" style="display:none">
+<div class="card">
+<h2>🏨 होटल की जानकारी</h2>
+<p id="address"></p>
+<p id="hours"></p>
+<p id="delivery"></p>
+<p id="phone"></p>
+<button onclick="callHotel()">फोन करें</button>
+</div>
+<div class="card">
+<h2>📍 हमारा पता</h2>
+<p id="mapAddress">कटनी, मध्य प्रदेश</p>
+<button onclick="openMap()">Google Maps पर देखें</button>
+</div>
+</section>
+
+<section id="admin" class="admin">
+<div class="card">
+<h2>🔐 होटल Admin Panel</h2>
+<p class="small">डिफॉल्ट PIN: 1234 (लॉगिन के बाद बदलें)</p>
+<input id="pin" type="password" placeholder="Admin PIN">
+<button onclick="login()">Login</button>
+</div>
+
+<div id="controls" style="display:none">
+<div class="card">
+<h2>🏨 होटल की जानकारी बदलें</h2>
+<label>होटल का नाम</label>
+<input id="aName">
+<label>टैगलाइन</label>
+<input id="aTag">
+<label>पूरा पता</label>
+<textarea id="aAddress"></textarea>
+<label>फोन नंबर (देश कोड सहित, जैसे 91...)</label>
+<input id="aPhone">
+<label>खुलने का समय</label>
+<input id="aHours">
+<label>होम डिलीवरी</label>
+<select id="aDelivery">
+<option>उपलब्ध है</option>
+<option>उपलब्ध नहीं है</option>
+</select>
+<label>Google Maps का पता या लिंक</label>
+<input id="aMap">
+<label>नया Admin PIN</label>
+<input id="aPin" type="password" placeholder="नया PIN (वैकल्पिक)">
+<button class="green" onclick="saveInfo()">जानकारी सेव करें</button>
+</div>
+
+<div class="card">
+<h2>🍛 नया खाना जोड़ें</h2>
+<label>खाने का नाम</label>
+<input id="newName" placeholder="जैसे राजस्थानी थाली">
+<label>कीमत (₹)</label>
+<input id="newPrice" type="number" placeholder="150">
+<label>श्रेणी</label>
+<select id="newCategory">
+<option>थाली</option>
+<option>सब्जी</option>
+<option>रोटी</option>
+<option>नाश्ता</option>
+<option>मिठाई</option>
+<option>पेय पदार्थ</option>
+<option>अन्य</option>
+</select>
+<button onclick="addFood()">मेन्यू में जोड़ें</button>
+</div>
+
+<div class="card">
+<h2>✏️ मेन्यू और कीमत कंट्रोल</h2>
+<div id="editMenu"></div>
+</div>
+
+<button onclick="logout()">Admin Logout</button>
+</div>
+</section>
+
+<footer>
+<h3 id="footerName">मारवाड़ी राजस्थानी भोजनालय</h3>
+<p>आपका अपना राजस्थानी भोजनालय ❤️</p>
+<p>कटनी, मध्य प्रदेश</p>
+</footer>
+
+<script>
+const defaults={
+name:"मारवाड़ी राजस्थानी भोजनालय",
+tag:"शुद्ध राजस्थानी एवं मारवाड़ी स्वाद",
+address:"कटनी, मध्य प्रदेश",
+phone:"",
+hours:"सुबह 9 बजे से रात 10 बजे तक",
+delivery:"उपलब्ध है",
+map:"Katni Madhya Pradesh",
+pin:"1234",
+menu:[
+{name:"राजस्थानी स्पेशल थाली",price:150,category:"थाली"},
+{name:"दाल बाटी चूरमा",price:120,category:"थाली"},
+{name:"गट्टे की सब्जी",price:80,category:"सब्जी"},
+{name:"बाजरे की रोटी",price:20,category:"रोटी"},
+{name:"मसाला छाछ",price:30,category:"पेय पदार्थ"},
+{name:"मूंग दाल हलवा",price:60,category:"मिठाई"}
+]
+};
+
+let data;
+try{
+data=JSON.parse(localStorage.getItem("marwariHotel"))||defaults;
+}catch(e){data=defaults;}
+
+function save(){
+localStorage.setItem("marwariHotel",JSON.stringify(data));
+}
+
+function show(id){
+["home","menu","info","admin"].forEach(x=>{
+document.getElementById(x).style.display="none";
+});
+document.getElementById(id).style.display="block";
+if(id==="admin") document.getElementById("controls").style.display="none";
+render();
+}
+
+function render(){
+document.getElementById("hotelName").textContent=data.name;
+document.getElementById("tagline").textContent=data.tag;
+document.getElementById("footerName").textContent=data.name;
+document.getElementById("homeHours").textContent="🕒 "+data.hours;
+document.getElementById("address").textContent="📍 "+data.address;
+document.getElementById("hours").textContent="🕒 समय: "+data.hours;
+document.getElementById("delivery").textContent="🚚 होम डिलीवरी: "+data.delivery;
+document.getElementById("phone").textContent="📞 "+(data.phone||"फोन नंबर जल्द उपलब्ध होगा");
+document.getElementById("mapAddress").textContent=data.address;
+
+let html="";
+data.menu.forEach((m,i)=>{
+html+=`<div class="item">
+<div><b>${escapeHTML(m.name)}</b><br>
+<span class="small">${escapeHTML(m.category)}</span></div>
+<div class="price">₹${Number(m.price)}</div>
+</div>`;
+});
+document.getElementById("menuList").innerHTML=html||"मेन्यू जल्द उपलब्ध होगा।";
+
+let edit="";
+data.menu.forEach((m,i)=>{
+edit+=`<div class="card">
+<b>${escapeHTML(m.name)}</b>
+<p>₹${Number(m.price)} | ${escapeHTML(m.category)}</p>
+<input id="price${i}" type="number" value="${Number(m.price)}">
+<button onclick="changePrice(${i})">कीमत बदलें</button>
+<button style="background:#b3261e" onclick="removeFood(${i})">हटाएँ</button>
+</div>`;
+});
+document.getElementById("editMenu").innerHTML=edit;
+}
+
+function escapeHTML(s){
+return String(s).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;","'":"&#39;"
+}[c]));
+}
+
+function login(){
+if(document.getElementById("pin").value===data.pin){
+document.getElementById("controls").style.display="block";
+document.getElementById("aName").value=data.name;
+document.getElementById("aTag").value=data.tag;
+document.getElementById("aAddress").value=data.address;
+document.getElementById("aPhone").value=data.phone;
+document.getElementById("aHours").value=data.hours;
+document.getElementById("aDelivery").value=data.delivery;
+document.getElementById("aMap").value=data.map;
+render();
+}else alert("गलत PIN!");
+}
+
+function saveInfo(){
+data.name=document.getElementById("aName").value;
+data.tag=document.getElementById("aTag").value;
+data.address=document.getElementById("aAddress").value;
+data.phone=document.getElementById("aPhone").value;
+data.hours=document.getElementById("aHours").value;
+data.delivery=document.getElementById("aDelivery").value;
+data.map=document.getElementById("aMap").value;
+let p=document.getElementById("aPin").value;
+if(p)data.pin=p;
+save();render();
+alert("होटल की जानकारी सेव हो गई!");
+}
+
+function addFood(){
+let name=document.getElementById("newName").value.trim();
+let price=Number(document.getElementById("newPrice").value);
+if(!name||!Number.isFinite(price)||price<0){
+alert("सही नाम और कीमत भरें");return;
+}
+data.menu.push({
+name,price,
+category:document.getElementById("newCategory").value
+});
+save();render();
+document.getElementById("newName").value="";
+document.getElementById("newPrice").value="";
+alert("नया खाना जोड़ दिया गया!");
+}
+
+function changePrice(i){
+let p=Number(document.getElementById("price"+i).value);
+if(!Number.isFinite(p)||p<0)return alert("सही कीमत भरें");
+data.menu[i].price=p;save();render();
+alert("कीमत बदल गई!");
+}
+
+function removeFood(i){
+if(confirm("क्या यह खाना हटाना चाहते हैं?")){
+data.menu.splice(i,1);save();render();
+}
+}
+
+function logout(){
+document.getElementById("controls").style.display="none";
+document.getElementById("pin").value="";
+}
+
+function callHotel(){
+if(data.phone)location.href="tel:"+data.phone;
+else alert("पहले Admin Panel में फोन नंबर डालें");
+}
+
+function openMap(){
+window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(data.map)," _blank");
+}
+
+function order(){
+if(!data.phone)return alert("Admin Panel में WhatsApp नंबर डालें");
+let message="नमस्ते "+data.name+"! मुझे भोजन ऑर्डर करना है। कृपया मेन्यू बताएं।";
+window.open("https://wa.me/"+data.phone.replace(/\D/g,"")+"?text="+encodeURIComponent(message),"_blank");
+}
+
+render();
+</script>
+</body>
+</html>
